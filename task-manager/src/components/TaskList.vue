@@ -1,5 +1,6 @@
 <template>
   <div class="task-list">
+    <h2>Task List</h2>
     <TaskItem
       v-for="task in tasks"
       :key="task.id"
@@ -41,6 +42,12 @@ export default {
 
 <style scoped>
 .task-list {
-  margin-top: 20px;
+  margin-left: 20px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.task-list h2 {
+  text-align: center;
 }
 </style>
