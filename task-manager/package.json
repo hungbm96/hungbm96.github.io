@@ -6,7 +6,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "dev": "vite",
-    "build": "vite build",
+    "build": "vue-cli-service build",
+    "deploy": "gh-pages -d dist",
     "preview": "vite preview"
   },
   "dependencies": {
