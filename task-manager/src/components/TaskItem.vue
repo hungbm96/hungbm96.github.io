@@ -1,13 +1,9 @@
 <template>
   <div class="task-item">
-    <input
-      type="checkbox"
-      :checked="task.completed"
-      @change="$emit('toggle-task', task.id)"
-    />
+    <input type="checkbox" :checked="task.completed" @change="toggleTask" />
     <span :class="{ completed: task.completed }">{{ task.name }}</span>
-    <button @click="$emit('edit-task', task)">Chỉnh sửa</button>
-    <button @click="$emit('delete-task', task.id)">Xóa</button>
+    <button @click="editTask">Edit</button>
+    <button @click="deleteTask">Delete</button>
   </div>
 </template>
 
@@ -18,6 +14,21 @@ export default {
     task: {
       type: Object,
       required: true,
+    },
+    showCompleteButton: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  methods: {
+    toggleTask() {
+      this.$emit("toggle-task", this.task.id);
+    },
+    editTask() {
+      this.$emit("edit-task", this.task);
+    },
+    deleteTask() {
+      this.$emit("delete-task", this.task.id);
     },
   },
 };
@@ -30,21 +41,16 @@ export default {
   margin-bottom: 10px;
 }
 
-input[type="checkbox"] {
+.task-item input[type="checkbox"] {
   margin-right: 10px;
 }
 
-span {
-  flex-grow: 1;
-}
-
-span.completed {
+.task-item span.completed {
   text-decoration: line-through;
-  color: gray;
 }
 
-button {
-  margin-left: 5px;
+.task-item button {
+  margin-left: 10px;
   padding: 5px 10px;
   border: none;
   background-color: #42b983;
@@ -53,7 +59,7 @@ button {
   border-radius: 3px;
 }
 
-button:hover {
+.task-item button:hover {
   background-color: #2c8c6b;
 }
 </style>

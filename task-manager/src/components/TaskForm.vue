@@ -1,15 +1,7 @@
 <template>
   <div class="task-form">
-    <h2>{{ isEditing ? "Chỉnh sửa công việc" : "Thêm công việc mới" }}</h2>
-    <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label for="taskName">Tên công việc:</label>
-        <input type="text" id="taskName" v-model="task.name" required />
-      </div>
-      <button type="submit">
-        {{ isEditing ? "Lưu thay đổi" : "Thêm công việc" }}
-      </button>
-    </form>
+    <input type="text" v-model="taskCopy.name" placeholder="Input task name" />
+    <button @click="saveTask">{{ buttonLabel }}</button>
   </div>
 </template>
 
@@ -17,50 +9,43 @@
 export default {
   name: "TaskForm",
   props: {
-    taskToEdit: {
+    task: {
       type: Object,
-      default: () => ({
-        id: null,
-        name: "",
-        completed: false,
-      }),
+      default: () => ({ name: "", completed: false }),
     },
   },
   data() {
     return {
-      task: { ...this.taskToEdit },
-      isEditing: !!this.taskToEdit.id,
+      taskCopy: { ...this.task },
     };
   },
-  methods: {
-    handleSubmit() {
-      if (this.isEditing) {
-        this.$emit("edit-task", this.task);
-      } else {
-        const newTask = {
-          ...this.task,
-          id: Date.now(),
-        };
-        this.$emit("add-task", newTask);
-      }
-      this.resetForm();
+  watch: {
+    task(newTask) {
+      this.taskCopy = { ...newTask };
     },
-    resetForm() {
-      this.task = {
-        id: null,
-        name: "",
-        completed: false,
-      };
-      this.isEditing = false;
+    "$route.params.id": {
+      immediate: true,
+      handler(id) {
+        if (id) {
+          const task =
+            this.$parent.tasks &&
+            this.$parent.tasks.find((task) => task.id === parseInt(id));
+          if (task) {
+            this.taskCopy = { ...task };
+          }
+        }
+      },
     },
   },
-  watch: {
-    taskToEdit: {
-      handler(newTask) {
-        this.task = { ...newTask };
-        this.isEditing = !!newTask.id;
-      },
-      deep: true,
+  computed: {
+    buttonLabel() {
+      return this.taskCopy.id ? "Save change" : "Create";
+    },
+  },
+  methods: {
+    saveTask() {
+      this.$emit("save-task", this.taskCopy);
+      this.taskCopy = { name: "", completed: false };
     },
   },
 };
@@ -68,35 +53,21 @@ export default {
 
 <style scoped>
 .task-form {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.form-group {
   margin-bottom: 20px;
 }
 
-label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-input[type="text"] {
-  width: 100%;
-  padding: 8px;
-  box-sizing: border-box;
+input {
+  padding: 5px;
+  margin-right: 10px;
 }
 
 button {
+  padding: 5px 10px;
+  border: none;
   background-color: #42b983;
   color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
   cursor: pointer;
+  border-radius: 3px;
 }
 
 button:hover {
